@@ -11,6 +11,7 @@ use chrono::{DateTime, Local};
 use futures_util::stream::StreamExt;
 use getopts::Options;
 use std::env;
+use std::path::PathBuf;
 use tokio::time::{sleep, Duration};
 use x11rb::connection::Connection;
 use x11rb::protocol::xproto::*;
@@ -21,7 +22,6 @@ fn usage(progname: &str, opts: getopts::Options) {
     let brief = format!("Usage: {progname} [options]");
     let usage = opts.usage(&brief);
     eprint!("{usage}");
-
 }
 
 fn get_datetime() -> DateTime<Local> {
@@ -58,13 +58,21 @@ fn get_battery(batteries: &Vec<Battery>) -> Result<(f32, bool), anyhow::Error> {
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    let default_config_path = "~/.config/rsbr/rsbrrc";
+    let mut default_config_path= match dirs::home_dir() {
+        Some(x) => x,
+        None => {
+            eprintln!("Could not find home directory!");
+            return Err(anyhow::anyhow!("Could not find home directory!"));
+        }
+    };
+
+    default_config_path.push("./.config/rsbr/rsbrrc");
 
     let args: Vec<String> = env::args().collect();
     let progname = args[0].clone();
     let mut opts = Options::new();
     opts.optflag("h", "help", "Print help and exit");
-    opts.optopt("c", "config", "toml config file", default_config_path);
+    opts.optopt("c", "config", "toml config file", default_config_path.to_str().unwrap_or(""));
 
     let matches = match opts.parse(&args[1..]) {
         Ok(x) => x,
@@ -81,8 +89,8 @@ async fn main() -> Result<(), anyhow::Error> {
     }
 
     let config_path = match matches.opt_str("c") {
-        Some(x) => x,
-        None => String::from(default_config_path),
+        Some(x) => PathBuf::from(x),
+        None => default_config_path,
     };
 
     let config = match read_config(&config_path) {
@@ -107,7 +115,11 @@ async fn main() -> Result<(), anyhow::Error> {
         let datetime = get_datetime().format(&config.datetime.format).to_string();
 
         let battery = match get_battery(&batteries) {
-            Ok((battery_charge, battery_status)) => format!("{} {}", get_battery_icon(battery_charge, battery_status), battery_charge),
+            Ok((battery_charge, battery_status)) => format!(
+                "{} {}",
+                get_battery_icon(battery_charge, battery_status),
+                battery_charge
+            ),
             Err(x) => {
                 eprintln!("{x}");
                 "No Battery".to_string()

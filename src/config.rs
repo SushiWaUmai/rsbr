@@ -1,6 +1,7 @@
 use crate::hexcolor::{Theme, ThemeColor};
 use serde::Deserialize;
 use std::fs;
+use std::path::PathBuf;
 use std::str::FromStr;
 use toml;
 
@@ -103,7 +104,7 @@ impl FromStr for RsbrConfig {
     }
 }
 
-pub fn read_config(config_path: &str) -> Result<RsbrConfig, anyhow::Error> {
+pub fn read_config(config_path: &PathBuf) -> Result<RsbrConfig, anyhow::Error> {
     let config_content = fs::read_to_string(config_path)?;
     let config = RsbrConfig::from_str(config_content.as_str())?;
 
