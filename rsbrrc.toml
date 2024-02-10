@@ -1,0 +1,39 @@
+format = "    {brightness} {battery} {datetime}"
+
+
+[theme]
+background = "#282A36"
+foreground = "#F8F8F2"
+
+black = "#21222C"
+red = "#FF5555"
+green = "#50FA7B"
+yellow = "#F1FA8C"
+blue = "#BD93F9"
+magenta = "#FF79C6"
+cyan = "#8BE9FD"
+white = "#F8F8F2"
+purple = "#FF79C6"
+
+bright_black = "#6272A4"
+bright_red = "#FF6E6E"
+bright_green = "#69FF94"
+bright_yellow = "#FFFFA5"
+bright_blue = "#D6ACFF"
+bright_magenta = "#FF92D0"
+bright_cyan = "#A4FFFF"
+bright_white = "#FFFFFF"
+bright_purple = "#FF92DF"
+
+[datetime]
+format = "%a. %d %b. %Y - %H:%M:%S"
+fgcolor = "black"
+bgcolor = "blue"
+
+[battery]
+fgcolor = "green"
+bgcolor = "black"
+
+[brightness]
+fgcolor = "red"
+bgcolor = "black"
