@@ -130,7 +130,7 @@ impl FromStr for ThemeColor {
     type Err = anyhow::Error;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let re =
-            Regex::new(r"^(black|green|white|grey|blue|red|orange|yellow|pink|darkblue)$").unwrap();
+            Regex::new(r"^(black|red|green|yellow|blue|magenta|cyan|white|purple|bright_black|bright_red|bright_green|bright_yellow|bright_blue|bright_magenta|bright_cyan|bright_white|bright_purple|background|foreground)$").unwrap();
         if re.is_match(&s) {
             Ok(ThemeColor(s.to_string()))
         } else {

@@ -1,6 +1,8 @@
 pub mod battery;
 pub mod datetime;
 pub mod brightness;
+pub mod audio;
+pub mod network;
 
 use async_trait::async_trait;
 

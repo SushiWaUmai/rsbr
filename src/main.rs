@@ -6,10 +6,12 @@ mod property;
 use crate::config::{read_config, RsbrConfig};
 use anyhow::Result;
 use getopts::Options;
-use property::{ShowBars, ShowBar};
+use property::audio::AudioProperty;
 use property::battery::BatteryProperty;
 use property::brightness::BrightnessProperty;
 use property::datetime::DatetimeProperty;
+use property::network::NetworkProperty;
+use property::{ShowBar, ShowBars};
 use std::env;
 use std::path::PathBuf;
 use tokio::time::{sleep, Duration};
@@ -26,7 +28,7 @@ fn usage(progname: &str, opts: getopts::Options) {
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    let mut default_config_path= match dirs::home_dir() {
+    let mut default_config_path = match dirs::home_dir() {
         Some(x) => x,
         None => {
             eprintln!("Could not find home directory!");
@@ -40,7 +42,12 @@ async fn main() -> Result<(), anyhow::Error> {
     let progname = args[0].clone();
     let mut opts = Options::new();
     opts.optflag("h", "help", "Print help and exit");
-    opts.optopt("c", "config", "toml config file", default_config_path.to_str().unwrap_or(""));
+    opts.optopt(
+        "c",
+        "config",
+        "toml config file",
+        default_config_path.to_str().unwrap_or(""),
+    );
 
     let matches = match opts.parse(&args[1..]) {
         Ok(x) => x,
@@ -74,7 +81,13 @@ async fn main() -> Result<(), anyhow::Error> {
 
     let root_window = screen.root;
 
-    let properties: Vec<Box<dyn ShowBar>> = vec![Box::new(BatteryProperty), Box::new(BrightnessProperty), Box::new(DatetimeProperty)];
+    let properties: Vec<Box<dyn ShowBar>> = vec![
+        Box::new(BatteryProperty),
+        Box::new(BrightnessProperty),
+        Box::new(DatetimeProperty),
+        Box::new(AudioProperty),
+        Box::new(NetworkProperty),
+    ];
     let attributes = ShowBars::new(properties);
 
     loop {

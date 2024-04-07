@@ -40,11 +40,11 @@ impl ShowBar for BatteryProperty {
             Ok((battery_charge, battery_status)) => format!(
                 "{} {}",
                 icons::get_battery_icon(battery_charge, battery_status),
-                battery_charge
+                battery_charge.ceil()
             ),
             Err(x) => {
                 eprintln!("{x}");
-                "No Battery".to_string()
+                "No Battery Found".to_string()
             }
         };
 

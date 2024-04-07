@@ -25,6 +25,27 @@ pub fn get_battery_icon(battery_percent: f32, is_charging: bool) -> &'static str
     }
 }
 
+pub fn get_wifi_icon(network_ssid: &str) -> &'static str {
+    if network_ssid == "" {
+        NO_WIFI_ICON
+    } else {
+        WIFI_ICON
+    }
+}
+
+pub fn get_volume_icon(volume_percent: u32, is_muted: bool) -> &'static str {
+    if is_muted {
+        return VOLUME_MUTED_ICON;
+    }
+
+    let index = match volume_percent {
+        0..=33 => 0,
+        34..=66 => 1,
+        _ => 2,
+    };
+    VOLUME_ICONS[index]
+}
+
 pub fn get_brightness_icon(brightness_percent: u32) -> &'static str {
     let index = match brightness_percent {
         0..=33 => 0,

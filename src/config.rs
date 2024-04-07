@@ -14,6 +14,7 @@ pub struct RsbrConfig {
     pub audio: RsbrAudioConfig,
     pub battery: RsbrBatteryConfig,
     pub brightness: RsbrBrightnessConfig,
+    pub network: RsbrNetworkConfig,
 }
 
 #[derive(Deserialize, Clone)]
@@ -45,9 +46,16 @@ pub struct RsbrAudioConfig {
     pub bgcolor: ThemeColor,
 }
 
+#[derive(Deserialize, Clone)]
+#[serde(default)]
+pub struct RsbrNetworkConfig {
+    pub fgcolor: ThemeColor,
+    pub bgcolor: ThemeColor,
+}
+
 impl Default for RsbrDatetimeConfig {
     fn default() -> Self {
-        RsbrDatetimeConfig {
+        Self {
             format: "%Y-%m-%d %H:%M:%S".to_string(),
             fgcolor: ThemeColor::from_str("white").unwrap(),
             bgcolor: ThemeColor::from_str("black").unwrap(),
@@ -57,7 +65,7 @@ impl Default for RsbrDatetimeConfig {
 
 impl Default for RsbrBrightnessConfig {
     fn default() -> Self {
-        RsbrBrightnessConfig {
+        Self {
             fgcolor: ThemeColor::from_str("white").unwrap(),
             bgcolor: ThemeColor::from_str("black").unwrap(),
         }
@@ -66,7 +74,7 @@ impl Default for RsbrBrightnessConfig {
 
 impl Default for RsbrBatteryConfig {
     fn default() -> Self {
-        RsbrBatteryConfig {
+        Self {
             fgcolor: ThemeColor::from_str("white").unwrap(),
             bgcolor: ThemeColor::from_str("black").unwrap(),
         }
@@ -75,7 +83,16 @@ impl Default for RsbrBatteryConfig {
 
 impl Default for RsbrAudioConfig {
     fn default() -> Self {
-        RsbrAudioConfig {
+        Self {
+            fgcolor: ThemeColor::from_str("white").unwrap(),
+            bgcolor: ThemeColor::from_str("black").unwrap(),
+        }
+    }
+}
+
+impl Default for RsbrNetworkConfig {
+    fn default() -> Self {
+        Self {
             fgcolor: ThemeColor::from_str("white").unwrap(),
             bgcolor: ThemeColor::from_str("black").unwrap(),
         }
@@ -90,6 +107,7 @@ impl Default for RsbrConfig {
             battery: RsbrBatteryConfig::default(),
             brightness: RsbrBrightnessConfig::default(),
             audio: RsbrAudioConfig::default(),
+            network: RsbrNetworkConfig::default(),
             theme: Theme::default(),
         }
     }

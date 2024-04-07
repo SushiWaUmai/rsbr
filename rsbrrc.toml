@@ -1,4 +1,4 @@
-format = "    {brightness} {battery} {datetime}"
+format = "    {network} {audio} {brightness} {battery} {datetime}"
 
 
 [theme]
@@ -37,3 +37,11 @@ bgcolor = "black"
 [brightness]
 fgcolor = "red"
 bgcolor = "black"
+
+[audio]
+fgcolor = "yellow"
+bgcolor = "black"
+
+[network]
+fgcolor = "black"
+bgcolor = "cyan"
