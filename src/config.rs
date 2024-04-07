@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use toml;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 #[serde(default)]
 pub struct RsbrConfig {
     pub theme: Theme,
@@ -16,7 +16,7 @@ pub struct RsbrConfig {
     pub brightness: RsbrBrightnessConfig,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 #[serde(default)]
 pub struct RsbrDatetimeConfig {
     pub format: String,
@@ -24,21 +24,21 @@ pub struct RsbrDatetimeConfig {
     pub bgcolor: ThemeColor,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 #[serde(default)]
 pub struct RsbrBrightnessConfig {
     pub fgcolor: ThemeColor,
     pub bgcolor: ThemeColor,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 #[serde(default)]
 pub struct RsbrBatteryConfig {
     pub fgcolor: ThemeColor,
     pub bgcolor: ThemeColor,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 #[serde(default)]
 pub struct RsbrAudioConfig {
     pub fgcolor: ThemeColor,

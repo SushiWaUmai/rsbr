@@ -5,7 +5,7 @@ use serde::{Deserialize, Deserializer};
 use std::fmt;
 use std::str::FromStr;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct HexColor(pub String);
 
 impl fmt::Display for HexColor {
@@ -42,7 +42,7 @@ impl<'de> Deserialize<'de> for HexColor {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct Theme {
     pub black: HexColor,
     pub red: HexColor,
@@ -123,7 +123,7 @@ impl Default for Theme {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ThemeColor(pub String);
 
 impl FromStr for ThemeColor {

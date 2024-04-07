@@ -1,15 +1,15 @@
 mod config;
 mod hexcolor;
 mod icons;
+mod property;
 
 use crate::config::{read_config, RsbrConfig};
-use crate::icons::{get_battery_icon, get_brightness_icon};
 use anyhow::Result;
-use battery::Battery;
-use brightness::Brightness;
-use chrono::{DateTime, Local};
-use futures_util::stream::StreamExt;
 use getopts::Options;
+use property::{ShowBars, ShowBar};
+use property::battery::BatteryProperty;
+use property::brightness::BrightnessProperty;
+use property::datetime::DatetimeProperty;
 use std::env;
 use std::path::PathBuf;
 use tokio::time::{sleep, Duration};
@@ -22,38 +22,6 @@ fn usage(progname: &str, opts: getopts::Options) {
     let brief = format!("Usage: {progname} [options]");
     let usage = opts.usage(&brief);
     eprint!("{usage}");
-}
-
-fn get_datetime() -> DateTime<Local> {
-    Local::now()
-}
-
-async fn get_brightness() -> Result<u32, anyhow::Error> {
-    match brightness::brightness_devices().next().await {
-        Some(x) => match x {
-            Ok(x) => Ok(x.get().await? + 1),
-            Err(x) => Err(anyhow::anyhow!(x)),
-        },
-        None => Err(anyhow::anyhow!("No brightness devices found!")),
-    }
-}
-
-fn get_battery(batteries: &Vec<Battery>) -> Result<(f32, bool), anyhow::Error> {
-    if batteries.len() == 0 {
-        return Err(anyhow::anyhow!("No Battery found!"));
-    }
-
-    let sum: f32 = batteries
-        .iter()
-        .map(|x| x.state_of_charge().get::<battery::units::ratio::percent>())
-        .sum();
-
-    let battery_charging = batteries
-        .iter()
-        .map(|x| x.state())
-        .any(|x| x == battery::State::Charging);
-
-    Ok((sum / batteries.len() as f32, battery_charging))
 }
 
 #[tokio::main]
@@ -106,63 +74,11 @@ async fn main() -> Result<(), anyhow::Error> {
 
     let root_window = screen.root;
 
-    let manager = battery::Manager::new()?;
+    let properties: Vec<Box<dyn ShowBar>> = vec![Box::new(BatteryProperty), Box::new(BrightnessProperty), Box::new(DatetimeProperty)];
+    let attributes = ShowBars::new(properties);
 
     loop {
-        let batteries = manager.batteries()?;
-        let batteries: Vec<Battery> = batteries.filter_map(Result::ok).collect();
-
-        let datetime = get_datetime().format(&config.datetime.format).to_string();
-
-        let battery = match get_battery(&batteries) {
-            Ok((battery_charge, battery_status)) => format!(
-                "{} {}",
-                get_battery_icon(battery_charge, battery_status),
-                battery_charge
-            ),
-            Err(x) => {
-                eprintln!("{x}");
-                "No Battery".to_string()
-            }
-        };
-
-        let brightness = match get_brightness().await {
-            Ok(x) => format!("{} {}", get_brightness_icon(x), x),
-            Err(x) => {
-                eprintln!("{x}");
-                "No Brightness Device".to_string()
-            }
-        };
-
-        let root_name = &config
-            .format
-            .replace(
-                "{battery}",
-                &format!(
-                    "^c{}^^b{}^ {}% ",
-                    &config.theme.get_color(&config.battery.fgcolor),
-                    &config.theme.get_color(&config.battery.bgcolor),
-                    battery.as_str()
-                ),
-            )
-            .replace(
-                "{brightness}",
-                &format!(
-                    "^c{}^^b{}^ {}% ",
-                    &config.theme.get_color(&config.brightness.fgcolor),
-                    &config.theme.get_color(&config.brightness.bgcolor),
-                    brightness.as_str()
-                ),
-            )
-            .replace(
-                "{datetime}",
-                &format!(
-                    "^c{}^^b{}^ {} ",
-                    &config.theme.get_color(&config.datetime.fgcolor),
-                    &config.theme.get_color(&config.datetime.bgcolor),
-                    datetime,
-                ),
-            );
+        let root_name = attributes.process(config.clone()).await;
 
         conn.change_property8(
             PropMode::REPLACE,
