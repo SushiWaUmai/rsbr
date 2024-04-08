@@ -36,8 +36,6 @@ impl AudioProperty {
     }
 
     fn get_audio(&self) -> Result<(u32, bool), anyhow::Error> {
-        // nmcli -t -f active,ssid dev wifi | grep '^yes' | cut -c 5-
-
         let volume_perc = self.get_volume()?;
         let muted = self.get_muted()?;
 
