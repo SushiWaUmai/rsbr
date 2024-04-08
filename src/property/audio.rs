@@ -48,15 +48,11 @@ impl ShowBar for AudioProperty {
     async fn show_bar(&self, config: &RsbrConfig, template: &str) -> String {
         let audio = match self.get_audio() {
             Ok((volume_percent, is_muted)) => {
-                if is_muted {
-                    icons::get_volume_icon(volume_percent, is_muted).to_string()
-                } else {
-                    format!(
-                        "{} {}%",
-                        icons::get_volume_icon(volume_percent, is_muted).to_string(),
-                        volume_percent
-                    )
-                }
+                format!(
+                    "{} {}%",
+                    icons::get_volume_icon(volume_percent, is_muted).to_string(),
+                    volume_percent
+                )
             }
             Err(x) => {
                 eprintln!("{x}");
